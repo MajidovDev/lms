@@ -91,6 +91,14 @@ class UserModel(AbstractUser, BaseModel):
         self.check_pass()
         self.hashing_password()
 
+
+class UserProfile(BaseModel):
+    user = models.OneToOneField(to=UserModel, on_delete=models.CASCADE)
+
+    def __str__(self):
+        return f"{self.user.username}"
+        
+
 PHONE_EXPIRE = 2
 
 
