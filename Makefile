@@ -23,6 +23,11 @@ test:
 install:
 	pip install -r requirements.txt
 
+
+# Add project dependencies to requirements file
+freeze:
+	pip freeze > requirements.txt
+
 # Clean up generated files
 clean:
 	rm -rf __pycache__ */__pycache__ */*/__pycache__ *.pyc */*.pyc */*/*.pyc
