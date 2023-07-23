@@ -1,0 +1,56 @@
+# Python related files
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.pyi
+*.pyc/
+*.pyo/
+*.pyd/
+*.pyi/
+*.egg-info/
+*.egg/
+
+# Development and IDE files
+.vscode/
+*.idea
+*.code-workspace
+*.env
+*.env.*
+
+# Django development files
+*.sqlite3
+db.sqlite3
+*.pyc
+*.pyo
+*.pyc/
+*.pyo/
+*.pyd/
+
+# Media and static files (if not using a CDN)
+media/
+static/
+
+# Log files
+*.log
+
+# Secret keys and configuration
+*.secret
+*.key
+*.settings
+
+# Environment variables
+.env
+/venv/
+.venv
+
+# Ignore all compiled languages and binaries
+*.dll
+*.so
+*.dylib
+
+# Ignore macOS related files
+.DS_Store
+
+# Ignore Windows related files
+Thumbs.db
