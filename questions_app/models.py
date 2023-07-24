@@ -4,20 +4,29 @@ from users_app.models import UserProfile
 from django.core.validators import FileExtensionValidator, MaxLengthValidator
 
 
+class QuestionCategoryModel(BaseModel):
+    name = models.CharField(max_length=51)
+
+    def __str__(self):
+        return f"{self.name}"
+
+
 class QuestionModel(BaseModel):
-  author = models.ForeignKey(UserProfile, on_delete=models.CASCADE, related_name="questions")
-  image = models.ImageField(null=True, blank=True, upload_to='post_images', validators=[
-        FileExtensionValidator(allowed_extensions=['jpeg', 'png', 'jpg'])
-    ])
-  question = models.TextField(validators=[MaxLengthValidator(2000)])
+    author = models.ForeignKey(UserProfile, on_delete=models.CASCADE, related_name="questions")
+    category = models.ForeignKey(QuestionCategoryModel, null=True, blank=True, on_delete=models.CASCADE,
+                                 related_name="category")
+    image = models.ImageField(null=True, blank=True, upload_to='post_images', validators=[
+            FileExtensionValidator(allowed_extensions=['jpeg', 'png', 'jpg'])
+        ])
+    question = models.TextField(validators=[MaxLengthValidator(2000)])
 
-  class Meta:
-    db_table = "question"
-    verbose_name = "question"
-    verbose_name_plural = "questions"
+    class Meta:
+        db_table = "question"
+        verbose_name = "question"
+        verbose_name_plural = "questions"
 
-  def __str__(self):
-    return f"{self.author}`s question about {self.question}"
+    def __str__(self):
+        return f"{self.author}`s question about {self.question}"
 
 
 class QuestionCommentModel(BaseModel):

@@ -61,7 +61,7 @@ class GetNewVerification(APIView):
         self.check_verification(user)
         user.auth_type == VIA_PHONE
         code = user.create_verify_code(VIA_PHONE)
-        send_email(user.phone_number, code)
+        # send_email(user.phone_number, code)
         data = {
             "message": "Email or Phone Number is incorrect"
         }
