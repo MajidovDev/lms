@@ -2,7 +2,7 @@ from django.shortcuts import render
 from rest_framework import status
 from rest_framework.views import APIView
 
-from questions_app.serializers import QuestionSerializer, CategorySerializer, UserProfileSerializer, CommentSerializer, CommentLikeSerializer
+from questions_app.serializers import QuestionSerializer, CategorySerializer, UserSerializer, CommentSerializer, CommentLikeSerializer
 from questions_app.models import QuestionModel, QuestionCommentModel, QuestionCommentLikeModel, QuestionCategoryModel
 from rest_framework.generics import ListAPIView, CreateAPIView, RetrieveUpdateDestroyAPIView, RetrieveAPIView
 from rest_framework.permissions import IsAuthenticatedOrReadOnly, IsAuthenticated, AllowAny
@@ -20,6 +20,7 @@ class CategoryListApiView(ListAPIView):
 class CategoryCreateApiView(CreateAPIView):
     serializer_class = CategorySerializer
     permission_classes = [IsAuthenticated, ]
+    queryset = QuestionCategoryModel.objects.all()
 
     def perform_create(self, serializer):
         serializer.save(author=self.request.user)
@@ -43,6 +44,8 @@ class CategoryRetrieveUpdateDestroyApiView(RetrieveUpdateDestroyAPIView):
         })
 
     def delete(self, request, *args, **kwargs):
+        instance = self.get_object()
+        self.perform_destroy(instance)
         return Response({
             "success": True,
             "status": status.HTTP_204_NO_CONTENT,
@@ -84,6 +87,8 @@ class QuestionRetrieveUpdateDestroyApiView(RetrieveUpdateDestroyAPIView):
         })
 
     def delete(self, request, *args, **kwargs):
+        instance = self.get_object()
+        self.perform_destroy(instance)
         return Response({
             "success": True,
             "status": status.HTTP_204_NO_CONTENT,
@@ -101,18 +106,25 @@ class CommentListApiView(ListAPIView):
         return queryset
 
 
-class CommentCreateView(CreateAPIView):
+class CommentCreateApiView(CreateAPIView):
     serializer_class = CommentSerializer
     permission_classes = [IsAuthenticated,]
+    queryset = QuestionCommentModel.objects.all()
 
     def perform_create(self, serializer):
         question_id = self.kwargs['pk']
         serializer.save(author=self.request.user, question_id=question_id)
 
 
-class CommentRetrieveUpdateDestroyApiView(RetrieveUpdateDestroyAPIView):
+class AllCommentsListApiView(ListAPIView):
+    serializer_class = CommentSerializer
+    permission_classes = [IsAuthenticated, ]
     queryset = QuestionCommentModel.objects.all()
-    serializer_class = QuestionSerializer
+
+
+class AllCommentRetrieveUpdateDestroyApiView(RetrieveUpdateDestroyAPIView):
+    queryset = QuestionCommentModel.objects.all()
+    serializer_class = CommentSerializer
     permission_classes = [IsAuthenticatedOrReadOnly, ]
 
     def put(self, request, *args, **kwargs):
@@ -128,6 +140,8 @@ class CommentRetrieveUpdateDestroyApiView(RetrieveUpdateDestroyAPIView):
         })
 
     def delete(self, request, *args, **kwargs):
+        instance = self.get_object()
+        self.perform_destroy(instance)
         return Response({
             "success": True,
             "status": status.HTTP_204_NO_CONTENT,

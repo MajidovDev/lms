@@ -24,6 +24,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('swagger/', scheam_view.with_ui('swagger', cache_timeout=0), name='schema-swagger-ui'),
     path('user/', include('users_app.urls')),
+    path('question/', include('questions_app.urls')),
     path('', TemplateView.as_view(template_name='base.html'), name='base'),
 ]
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

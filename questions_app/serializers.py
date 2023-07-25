@@ -1,25 +1,32 @@
 from rest_framework import serializers
-from questions_app.models import UserProfile, QuestionCategoryModel, QuestionModel, QuestionCommentModel, \
+from questions_app.models import UserModel, QuestionCategoryModel, QuestionModel, QuestionCommentModel, \
     QuestionCommentLikeModel
+from users_app.models import UserModel
 
 
-class UserProfileSerializer(serializers.ModelSerializer):
+class UserSerializer(serializers.ModelSerializer):
     id = serializers.UUIDField(read_only=True)
 
     class Meta:
-        model = UserProfile
-        fields = ('id', 'username', 'photo')
+        model = UserModel
+        fields = ('id', 'username')
 
 
 class CategorySerializer(serializers.ModelSerializer):
+    author = serializers.CharField(source='author.username', read_only=True)
+
     class Meta:
         model = QuestionCategoryModel
-        fields = "__all__"
+        fields = (
+            "id",
+            "name",
+            "author"
+        )
 
 
 class QuestionSerializer(serializers.ModelSerializer):
     id = serializers.UUIDField(read_only=True)
-    author = UserProfileSerializer(read_only=True)
+    author = UserSerializer(read_only=True)
     category = CategorySerializer(read_only=True)
     question_comments_count = serializers.SerializerMethodField('get_question_comments_count')
 
@@ -29,6 +36,7 @@ class QuestionSerializer(serializers.ModelSerializer):
             "id",
             "author",
             "image",
+            "category",
             "question",
             "question_comments_count",
             "created_time",
@@ -42,7 +50,7 @@ class QuestionSerializer(serializers.ModelSerializer):
 
 class CommentSerializer(serializers.ModelSerializer):
     id = serializers.UUIDField(read_only=True)
-    author = UserProfileSerializer(read_only=True)
+    author = UserSerializer(read_only=True)
     replies = serializers.SerializerMethodField('get_replies')
     likes_count = serializers.SerializerMethodField('get_likes_count')
     me_liked = serializers.SerializerMethodField('get_me_liked')
@@ -72,7 +80,7 @@ class CommentSerializer(serializers.ModelSerializer):
 
 class CommentLikeSerializer(serializers.ModelSerializer):
     id = serializers.UUIDField(read_only=True)
-    author = UserProfileSerializer(read_only=True)
+    author = UserSerializer(read_only=True)
 
     class Meta:
         model = QuestionCommentLikeModel

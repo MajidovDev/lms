@@ -1,18 +1,19 @@
 from django.db import models
 from shared_app.models import BaseModel
-from users_app.models import UserProfile
+from users_app.models import UserModel
 from django.core.validators import FileExtensionValidator, MaxLengthValidator
 
 
 class QuestionCategoryModel(BaseModel):
     name = models.CharField(max_length=51)
+    author = models.ForeignKey(UserModel, on_delete=models.SET_NULL, blank=True, null=True)
 
     def __str__(self):
         return f"{self.name}"
 
 
 class QuestionModel(BaseModel):
-    author = models.ForeignKey(UserProfile, on_delete=models.CASCADE, related_name="questions")
+    author = models.ForeignKey(UserModel, on_delete=models.CASCADE, related_name="questions")
     category = models.ForeignKey(QuestionCategoryModel, null=True, blank=True, on_delete=models.CASCADE,
                                  related_name="category")
     image = models.ImageField(null=True, blank=True, upload_to='post_images', validators=[
@@ -30,8 +31,8 @@ class QuestionModel(BaseModel):
 
 
 class QuestionCommentModel(BaseModel):
-    author = models.ForeignKey(UserProfile, on_delete=models.CASCADE)
-    question = models.ForeignKey(QuestionModel, on_delete=models.CASCADE, related_name="comments")
+    author = models.ForeignKey(UserModel, on_delete=models.CASCADE, null=True, blank=True)
+    question = models.ForeignKey(QuestionModel, on_delete=models.CASCADE, related_name="comments", null=True, blank=True)
     comment = models.TextField()
     parent = models.ForeignKey(
         'self',
@@ -46,7 +47,7 @@ class QuestionCommentModel(BaseModel):
 
 
 class QuestionCommentLikeModel(BaseModel):
-    author = models.ForeignKey(UserProfile, on_delete=models.CASCADE)
+    author = models.ForeignKey(UserModel, on_delete=models.CASCADE)
     comment = models.ForeignKey(QuestionCommentModel, on_delete=models.CASCADE, related_name="likes")
 
     class Meta:
