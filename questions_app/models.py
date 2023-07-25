@@ -14,12 +14,18 @@ class QuestionCategoryModel(BaseModel):
 
 class QuestionModel(BaseModel):
     author = models.ForeignKey(UserModel, on_delete=models.CASCADE, related_name="questions")
-    category = models.ForeignKey(QuestionCategoryModel, null=True, blank=True, on_delete=models.CASCADE,
+    category = models.ForeignKey(QuestionCategoryModel, on_delete=models.CASCADE,
                                  related_name="category")
     image = models.ImageField(null=True, blank=True, upload_to='post_images', validators=[
             FileExtensionValidator(allowed_extensions=['jpeg', 'png', 'jpg'])
         ])
     question = models.TextField(validators=[MaxLengthValidator(2000)])
+
+    @classmethod
+    def create_question_with_category(cls, author, category_name, image=None, question=None):
+        category, created = QuestionCategoryModel.objects.get_or_create(name=category_name)
+        print(category)
+        return cls.objects.create(author=author, category=category["name"], image=image, question=question)
 
     class Meta:
         db_table = "question"

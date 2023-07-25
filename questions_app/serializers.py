@@ -18,7 +18,6 @@ class CategorySerializer(serializers.ModelSerializer):
     class Meta:
         model = QuestionCategoryModel
         fields = (
-            "id",
             "name",
             "author"
         )
@@ -27,7 +26,7 @@ class CategorySerializer(serializers.ModelSerializer):
 class QuestionSerializer(serializers.ModelSerializer):
     id = serializers.UUIDField(read_only=True)
     author = UserSerializer(read_only=True)
-    category = CategorySerializer(read_only=True)
+    category = CategorySerializer(write_only=True)
     question_comments_count = serializers.SerializerMethodField('get_question_comments_count')
 
     class Meta:
@@ -42,6 +41,14 @@ class QuestionSerializer(serializers.ModelSerializer):
             "created_time",
         ]
         extra_kwargs = {"image": {"required": False}}
+
+    def create(self, validated_data):
+        print(validated_data)
+        category = validated_data.pop('category')
+        category_name, created = QuestionCategoryModel.objects.get_or_create(name=category)
+        print(category_name)
+        validated_data['category'] = category_name
+        return super().create(validated_data)
 
     @staticmethod
     def get_question_comments_count(obj):
